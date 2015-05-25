@@ -1,0 +1,42 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BindPoints", "BindPoints.vcproj", "{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		DebugR5 = DebugR5
+		DebugR6 = DebugR6
+		DebugR7 = DebugR7
+		HybridR5 = HybridR5
+		HybridR6 = HybridR6
+		HybridR7 = HybridR7
+		ReleaseR5 = ReleaseR5
+		ReleaseR6 = ReleaseR6
+		ReleaseR7 = ReleaseR7
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR5.ActiveCfg = DebugR5|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR5.Build.0 = DebugR5|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR6.ActiveCfg = DebugR6|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR6.Build.0 = DebugR6|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR7.ActiveCfg = DebugR7|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR7.Build.0 = DebugR7|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR5.ActiveCfg = HybridR5|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR5.Build.0 = HybridR5|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR6.ActiveCfg = HybridR6|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR6.Build.0 = HybridR6|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR7.ActiveCfg = HybridR7|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR7.Build.0 = HybridR7|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR5.ActiveCfg = ReleaseR5|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR5.Build.0 = ReleaseR5|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR6.ActiveCfg = ReleaseR6|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR6.Build.0 = ReleaseR6|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR7.ActiveCfg = ReleaseR7|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR7.Build.0 = ReleaseR7|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

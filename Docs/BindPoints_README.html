@@ -1,0 +1,219 @@
+<HTML>
+<HEAD>
+	<TITLE>BindPoints</TITLE>
+	<STYLE TYPE="text/css">
+	<--
+		HR { color:rgb(140,140,140); height:1px; }
+		IMG { border-style:solid; border-width:1px; border-color:rgb(0,0,0); }
+		CODE { color:rgb(0,0,220); }
+		P.indent { padding:0pt 0pt 0pt 20pt }
+		DL.indent { padding:0pt 0pt 0pt 20pt }
+		DD { padding:3pt; }
+		LI { padding:3pt; }
+		LI.compact { padding:0pt; }
+		BODY { color:rgb(0,0,0); background-color:rgb(220,220,220); font-family:"Veranda","Arial","sans-serif"; font-size:10pt; }
+		A { text-decoration:none; }
+		A:link { color:rgb(0,0,150); }
+		A:visited { color:rgb(127,0,0) }
+		A:hover { background-color:rgb(255,255,0); }
+	-->
+	</STYLE>
+</HEAD>
+
+<BODY>
+
+<A NAME="top"></A>
+<H1>BindPoints</H1>
+<UL>
+	<LI CLASS="compact"><A HREF="#desc">Description</A></LI>
+	<LI CLASS="compact"><A HREF="#overview">MaxScript Access Overview</A></LI>
+	<LI CLASS="compact"><A HREF="#bindops">bindOps Functions</A></LI>
+	<LI CLASS="compact"><A HREF="#bugs">Known Bugs/Limitations</A></LI>
+	<LI CLASS="compact"><A HREF="#history">History</A></LI>
+	<LI CLASS="compact"><A HREF="#contact">Contact / Disclaimer / License</A></LI>
+</UL>
+
+<A NAME="desc"></A>
+<HR>
+<H3>Description:</H3>
+<DIV ALIGN="left">
+	<P>This is a collection of modifiers that lets you link points on an object to other points, faces, splines, or objects.  They can be thought of as weighted Linked XForm modifiers that let you link to any number of sub-object parts of another object.</P>
+	<P>All the modifiers have no properties and essentially no UI. They are entirely operated through a set of MaxScript functions.  Things to keep in mind when working with these modifiers:</P>
+	<UL>
+		<LI>Each point can be bound (with a specified weight) to any number of other points, faces, splines, or objects.
+		<LI>Instancing the modifier across several objects (whether the objects are instances or not) is not recommended (the resulting deformations can be wonky).
+		<LI>If you're binding points on a spline, keep in mind that all point indexes <I>include</I> counting the in/out tangents.  To compensate for this, the index for each knot would be <CODE>(knotIndex*3-1)</CODE> (ie. the index to be passed into the Bind() function for the 5th knot on a spline would be (5*3-1) = 14).
+	</UL>
+</DIV>
+<P><A HREF="#top">Back To Top...</A></P>
+
+<A NAME="overview"></A>
+<HR>
+<H3>MaxScript Access Overview:</H3>
+<P>
+-A global struct (<CODE>bindOps</CODE>) contains all the functions used to control the bind modifiers.<BR>
+-The first argument for all the functions is always an instance of the modifier you're working with.<BR>
+-All the functions work exactly the same with any of the four bind modifiers, with the exception of the actual <CODE>Bind</CODE> function (whose arguments vary depending on the type of bind modifier).
+</P>
+<P>
+For people who used the older version of this plugin, the <CODE>toFaceOps</CODE> and <CODE>toPointOps</CODE> structs no longer exist, and have been rolled into the <CODE>bindOps</CODE> struct.
+</P>
+<P>
+-Each modifier keeps track of a certain number of points (set with the <CODE>SetNumPoints</CODE> function).<BR>
+-Each point can have any number of weighted "<I>binds</I>" (set with the <CODE>Bind</CODE> function), which link that point to follow a specified object feature (depending on the type of bind modifier).<BR>
+-In general, workflow is as follows:<BR>
+<OL>
+	<LI>Create a bind modifier:<BR>
+	<CODE>myMod = BindToShape()</CODE>
+	<LI>Add the modifier to your object you want to deform (you can actually do this after you set up the binds as well):<BR>
+	<CODE>AddModifier $MyObject myMod</CODE>
+	<LI>Set the number of points used by the modifier:<BR>
+	<CODE>bindOps.SetNumPoints myMod $MyObject.numVerts</CODE>
+	<LI>Add any number of nodes you want to use as "bones":<BR>
+	<CODE>bindOps.AddNode myMod $MyObject $MyBoneObject</CODE>
+	<LI>Actually bind the points on your object to any of the bones:<BR>
+	<CODE>bindOps.Bind myMod pointIndex boneNodeIndex subSplineIndex lengthParam weight</CODE>
+</OL>
+More complete examples are in the included <I>BindPoints_Samples.ms</I> file.  This was used to create the included sample scene.<BR>
+Simply load the scene, and run the script to see how to work with the modifiers.
+</P>
+<P><A HREF="#top">Back To Top...</A></P>
+
+<A NAME="bindops"></A>
+<HR>
+<H3>bindOps Functions:</H3>
+<DL>
+	<DT><CODE><B>AddNode</B> &lt;bindModifier&gt; &lt;thisNode&gt; &lt;bindNode&gt;</CODE>
+		<DD>Adds a node (or "bone") to be used for deformation.<BR>
+		<CODE>thisNode</CODE> is the node that will be deformed (read: has the BindTo modifier applied).<BR>
+		<CODE>bindNode</CODE> is a node that will drive the deformation.
+
+	<DT><CODE><B>GetNumNodes</B> &lt;bindModifier&gt;</CODE>
+		<DD>Returns the number of bind nodes ("bones") used by the modifier.<BR>
+
+	<DT><CODE><B>RemoveNode</B> &lt;bindModifier&gt; &lt;bindNodeIndex&gt;</CODE>
+		<DD>Removed the specified node from the list of bind nodes.<BR>
+		<CODE>bindNodeIndex</CODE> must be less than or equal to <CODE>GetNumBindNodes</CODE>.
+
+	<DT><CODE><B>GetNode</B> &lt;bindModifier&gt; &lt;bindNodeIndex&gt;</CODE>
+		<DD>Returns the specified bind node.<BR>
+		<CODE>bindNodeIndex</CODE> must be less than or equal to <CODE>GetNumBindNodes</CODE>.
+
+	<DT><CODE><B>GetNumPoints</B> &lt;bindModifier&gt;</CODE>
+		<DD>Gets the number of points controlled by the bind modifier (defaults to 0).<BR>
+
+	<DT><CODE><B>SetNumPoints</B> &lt;bindModifier&gt; &lt;pointCount&gt;</CODE>
+		<DD>Sets the number of points controlled by the bind modifier. Returns OK.<BR>
+
+	<DT><CODE><B>Bind</B> &lt;bindTo<B>Point</B>Modifier&gt; &lt;thisNode&gt; &lt;pointIndex&gt; &lt;bindNodeIndex&gt; &lt;toPointIndex&gt; &lt;weight&gt;</CODE>
+	<DT><CODE><B>Bind</B> &lt;bindTo<B>Face</B>Modifier&gt; &lt;thisNode&gt; &lt;pointIndex&gt; &lt;bindNodeIndex&gt; &lt;faceIndex&gt; &lt;weight&gt;</CODE>
+	<DT><CODE><B>Bind</B> &lt;bindTo<B>Shape</B>Modifier&gt; &lt;thisNode&gt; &lt;pointIndex&gt; &lt;bindNodeIndex&gt; &lt;splineIndex&gt; &lt;lengthParam&gt; &lt;absolute&gt; &lt;weight&gt;</CODE>
+	<DT><CODE><B>Bind</B> &lt;bindTo<B>Node</B>Modifier&gt; &lt;thisNode&gt; &lt;pointIndex&gt; &lt;bindNodeIndex&gt; &lt;weight&gt;</CODE>
+		<DD>Binds a point to a specified feature on the specified bind node.  Returns TRUE on success, otherwise FALSE.<BR>
+		The first three arguments are always:<BR>
+		<OL>
+			<LI><CODE>thisNode</CODE> is the node that the bind modifier is applied to.
+			<LI><CODE>pointIndex</CODE> is the point you want to bind on the object with the bind modifier applied.
+			<LI><CODE>bindNodeIndex</CODE> is the node you want to bind <CODE>pointIndex</CODE> to.  Must be less than or equal to <CODE>GetNumBindNodes</CODE>.
+		</OL>
+		The remaining arguments depend on the type of bind modifier being used, and can be a combination of:<BR>
+		<UL>
+			<LI><CODE>toPointIndex</CODE> is the point you want to bind TO on the bind node.
+			<LI><CODE>lengthParam</CODE> is a value between 0.0 and 1.0, describing where along the spline the point will follow.<BR>
+			At 0.0, the point follows the spline "root", and at 1.0, the point will follow the spline "tip"
+			<LI><CODE>absolute</CODE> is a boolean value, and controls whether the point is bound in Absolute or Relative mode.  See the example file to compare the two behaviours.
+			<LI><CODE>weight</CODE> is expected to be a normalized weight value between 0.0 and 1.0, though it can be outside of that range if desired.<BR>
+			At 0.0, the bound point won't move at all, and at 1.0, the bind will fully move with the bind node feature.
+		</UL>
+
+	<DT><CODE><B>UnBind</B> &lt;bindModifier&gt; &lt;pointIndex&gt; &lt;bindIndex&gt;</CODE>
+		<DD>Removes the specified bind from the specified point.<BR>
+
+	<DT><CODE><B>GetNumBinds</B> &lt;bindModifier&gt; &lt;pointIndex&gt;</CODE>
+		<DD>Gets the number of binds assigned to the specified point.<BR>
+
+	<DT><CODE><B>GetBindInfo</B> &lt;bindModifier&gt; &lt;pointIndex&gt; &lt;bindIndex&gt;</CODE>
+		<DD>Returns an array containing info on the specified bind.<BR>
+		<CODE>pointIndex</CODE> must be less than or equal to <CODE>GetNumPoints</CODE>.<BR>
+		<CODE>bindIndex</CODE> must be less than or equal to <CODE>GetNumBinds</CODE> for the given <CODE>pointIndex</CODE>.<BR>
+		What the array contains depends on the type of bind modifier passed in:
+		<UL>
+			<LI>bindTo<B>Point</B>Modifier: <CODE>#(nodeIndex, pointIndex, weight)</CODE>
+			<LI>bindTo<B>Face</B>Modifier: <CODE>#(nodeIndex, faceIndex, weight)</CODE>
+			<LI>bindTo<B>Shape</B>Modifier: <CODE>#(nodeIndex, splineIndex, lengthParam, absolute, weight)</CODE>
+			<LI>bindTo<B>Node</B>Modifier: <CODE>#(nodeIndex, weight)</CODE>
+		</UL>
+
+	<DT><CODE><B>GetBindWeight</B> &lt;bindModifier&gt; &lt;pointIndex&gt; &lt;bindIndex&gt;</CODE>
+		<DD>Gets the weight of a bind on the specified point, or undefined if it doesn't exist.<BR>
+		<CODE>pointIndex</CODE> must be less than or equal to <CODE>GetNumPoints</CODE>.<BR>
+		<CODE>bindIndex</CODE> must be less than or equal to <CODE>GetNumBinds</CODE> for the given <CODE>pointIndex</CODE>.
+
+	<DT><CODE><B>SetBindWeight</B> &lt;bindModifier&gt; &lt;pointIndex&gt; &lt;bindIndex&gt; &lt;weight&gt;</CODE>
+		<DD>Sets the weight of a bind on the specified point, returns TRUE on success, FALSE on failure.<BR>
+		<CODE>pointIndex</CODE> must be less than or equal to <CODE>GetNumPoints</CODE>.<BR>
+		<CODE>bindIndex</CODE> must be less than or equal to <CODE>GetNumBinds</CODE> for the given <CODE>pointIndex</CODE>.<BR>
+		<CODE>weight</CODE> is expected to be a normalized weight value between 0.0 and 1.0, though it can be outside of that range if desired.
+
+	<DT><CODE><B>Update</B> &lt;bindModifier&gt;</CODE>
+		<DD>Updates any changes you've made via MaxScript and forces a scene refresh.<BR>
+		This isn't strictly necessary, but any changes you make won't be visible until either this function is called, or the modifier is refreshed in some other way (ie. scrubbing the time slider).<BR>
+		It's a good idea just to call this when you're done doing stuff, regardless.
+</DL>
+<P><A HREF="#top">Back To Top...</A></P>
+
+<A NAME="bugs"></A>
+<HR>
+<H3>Known Bugs/Limitations:</H3>
+<UL>
+	<LI>Undo/Redo isn't really supported.  Don't use it with these modifiers.
+	<LI>BindToShape is  <I>s l o w</I>. (hide the three objects using it in the sample MAX file, and you'll see what I mean).
+</UL>
+<P><A HREF="#top">Back To Top...</A></P>
+
+<A NAME="history"></A>
+<HR>
+<H3>History:</H3>
+<PRE>
+2001.03.07 - Created.
+2001.04.19 - Finished BindToShape and BindToNode.
+           - Updated BindToFace and BindToPoint to support multiple binds per point.
+           - Deformation respects selections passed up the stack now.
+2001.04.26 - Finalized script interface.
+           - Tweaked user interface.
+           - Small problem with old version loading fixed.
+2001.04.27 - Added absolute mode to BindToShape.
+2001.05.01 - Bugfix.
+2001.05.08 - Added Update
+2001.05.13 - Added global animatable strength
+2001.05.24 - Clone works now (fun typo crash bug).
+2003.04.15 - Might have fixed a bug with ToFace accessing invalid meshes.
+2007.02.20 - Updating for public 3dsmax9 release.
+2008.04.05 - Updated to 64 bit and 3dsmax 2008.  Thanks to <a href="http://www.maxplugins.de/">David Baker</a> for the help.
+</PRE>
+<P><A HREF="#top">Back To Top...</A></P>
+
+<A NAME="contact"></A>
+<HR>
+<H3>Contact / Disclaimer / License:</H3>
+Bug reports/comments/suggestions: <A HREF="http://www.footools.com/">http://www.footools.com/</A>. If you use this software on a project, sending an e-mail/postcard indicating such would be appreciated.<BR>
+<PRE>
+This software is provided 'as-is', without any express or implied warranty. In no
+event will the author be held liable for any damages arising from the use of this
+software.
+
+Permission is granted to anyone to use this software, subject to the following
+restrictions:
+
+1. The origin of this software must NOT be misrepresented; you must not claim that
+   you wrote the original software.
+
+2. This software may NOT be bundled with any other product or included in any
+   compilation without the express permission of the author.
+
+3. This notice must NOT be removed or altered from any distribution of this
+   software.
+</PRE>
+<P><A HREF="#top">Back To Top...</A></P>
+</BODY>
+</HTML>

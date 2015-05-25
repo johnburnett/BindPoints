@@ -1,0 +1,49 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BindPoints", "BindPoints.vcproj", "{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DebugR9|Win32 = DebugR9|Win32
+		DebugR9|x64 = DebugR9|x64
+		HybridR9|Win32 = HybridR9|Win32
+		HybridR9|x64 = HybridR9|x64
+		ReleaseR9|Win32 = ReleaseR9|Win32
+		ReleaseR9|x64 = ReleaseR9|x64
+		DebugR10|Win32 = DebugR10|Win32
+		DebugR10|x64 = DebugR10|x64
+		HybridR10|Win32 = HybridR10|Win32
+		HybridR10|x64 = HybridR10|x64
+		ReleaseR10|Win32 = ReleaseR10|Win32
+		ReleaseR10|x64 = ReleaseR10|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR9|Win32.ActiveCfg = DebugR9|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR9|Win32.Build.0 = DebugR9|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR9|x64.ActiveCfg = DebugR9|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR9|x64.Build.0 = DebugR9|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR9|Win32.ActiveCfg = HybridR9|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR9|Win32.Build.0 = HybridR9|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR9|x64.ActiveCfg = HybridR9|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR9|x64.Build.0 = HybridR9|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR9|Win32.ActiveCfg = ReleaseR9|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR9|Win32.Build.0 = ReleaseR9|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR9|x64.ActiveCfg = ReleaseR9|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR9|x64.Build.0 = ReleaseR9|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR10|Win32.ActiveCfg = DebugR10|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR10|Win32.Build.0 = DebugR10|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR10|x64.ActiveCfg = DebugR10|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.DebugR10|x64.Build.0 = DebugR10|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR10|Win32.ActiveCfg = HybridR10|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR10|Win32.Build.0 = HybridR10|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR10|x64.ActiveCfg = HybridR10|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.HybridR10|x64.Build.0 = HybridR10|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR10|Win32.ActiveCfg = ReleaseR10|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR10|Win32.Build.0 = ReleaseR10|Win32
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR10|x64.ActiveCfg = ReleaseR10|x64
+		{D21A5039-1E6C-47DC-A1C7-EE83A47EF90D}.ReleaseR10|x64.Build.0 = ReleaseR10|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

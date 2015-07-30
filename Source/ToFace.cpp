@@ -33,6 +33,9 @@ static ToFaceClassDesc ToFaceDesc;
 ClassDesc2* GetToFaceDesc() { return &ToFaceDesc; }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+#if MAX_VERSION_MAJOR < 15	//Max 2013
+ #define p_end end
+#endif
 
 static ParamBlockDesc2 bind_param_blk
 (
@@ -45,8 +48,8 @@ static ParamBlockDesc2 bind_param_blk
 		p_default, 	1.0f,
 		p_range, 	-9999999.0f,	9999999.0f,
 		p_ui, 		TYPE_SPINNER,	EDITTYPE_FLOAT, IDC_STRENGTH_EDIT,	IDC_STRENGTH_SPIN, 0.01f,
-		end,
-	end
+		p_end,
+	p_end
 );
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,10 +59,10 @@ class ToFaceParamMapDlgProc : public ParamMap2UserDlgProc
 public:
 	ToFaceParamMapDlgProc	(ToFace* toFace) : m_toFace(toFace) { }
 
-#if (MAX_RELEASE >= 9000)
-	INT_PTR	DlgProc			(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-#else
+#if MAX_VERSION_MAJOR < 9	//Max 9
 	BOOL	DlgProc			(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#else
+	INT_PTR	DlgProc			(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 	void	Update			(TimeValue t);
 	void	DeleteThis		();
@@ -68,10 +71,10 @@ private:
 	ToFace* m_toFace;
 };
 
-#if (MAX_RELEASE >= 9000)
-INT_PTR ToFaceParamMapDlgProc::DlgProc(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-#else
+#if MAX_VERSION_MAJOR < 9	//Max 9
 BOOL ToFaceParamMapDlgProc::DlgProc(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+#else
+INT_PTR ToFaceParamMapDlgProc::DlgProc(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 #endif
 {
 	switch (msg)
@@ -263,9 +266,15 @@ int ToFace::RemapRefOnLoad(int iref)
 		return iref;
 }
 
+#if MAX_VERSION_MAJOR < 17 //Max 2015
 RefResult ToFace::NotifyRefChanged(
 	Interval changeInt, RefTargetHandle hTarget,
 	PartID& partID,  RefMessage message)
+#else
+RefResult ToFace::NotifyRefChanged(
+	const Interval& changeInt, RefTargetHandle hTarget,
+	PartID& partID,  RefMessage message, BOOL propagate)
+#endif
 {
 	switch (message)
 	{
@@ -331,7 +340,11 @@ CreateMouseCallBack* ToFace::GetCreateMouseCallBack()
 	return NULL;
 }
 
+#if MAX_VERSION_MAJOR < 15 //Max 2013
 TCHAR* ToFace::GetObjectName()
+#else
+const TCHAR* ToFace::GetObjectName()
+#endif
 {
 	return GetString(IDS_TOFACE_CLASSNAME);
 }
@@ -669,17 +682,29 @@ void ToFace::UpdateUI()
 		for (i=0; i<pCount; i++)
 			bCount += m_pointInfo[i]->binds.Count();
 
+#if MAX_VERSION_MAJOR < 15 //Max 2013
 		str.printf("%d", nCount);
+#else
+		str.printf(_T("%d"), nCount);
+#endif
 		hTextWnd = GetDlgItem(m_hWnd,IDC_NUMNODES);
 		SetWindowText(hTextWnd, str);
 		str.Resize(0);
 
+#if MAX_VERSION_MAJOR < 15 //Max 2013
 		str.printf("%d", pCount);
+#else
+		str.printf(_T("%d"), pCount);
+#endif
 		hTextWnd = GetDlgItem(m_hWnd,IDC_NUMPOINTS);
 		SetWindowText(hTextWnd, str);
 		str.Resize(0);
 
+#if MAX_VERSION_MAJOR < 15 //Max 2013
 		str.printf("%d", bCount);
+#else
+		str.printf(_T("%d"), bCount);
+#endif
 		hTextWnd = GetDlgItem(m_hWnd,IDC_NUMBINDS);
 		SetWindowText(hTextWnd, str);
 
@@ -720,10 +745,14 @@ BOOL ToFace::AddNode(INode* thisNode, INode* node)
 
 	m_nodes.Append(1, &node);
 
-#if (MAX_RELEASE >= 9000)	//max 9
-	SetReference((NUM_REFS + m_nodes.Count()-1), node);
-#else	//max 8 and earlier
+#if MAX_VERSION_MAJOR < 9	//Max 9
 	MakeRefByID(FOREVER, (NUM_REFS + m_nodes.Count()-1), node);
+#else
+	#if MAX_VERSION_MAJOR < 14	//Max 2012
+	SetReference((NUM_REFS + m_nodes.Count()-1), node);
+	#else
+	ReplaceReference((NUM_REFS + m_nodes.Count()-1), node);
+	#endif
 #endif
 
 	UpdateUI();

@@ -16,10 +16,10 @@
 
 #include "Max.h"
 
-#if (MAX_RELEASE >= 9000)
-#include "maxheapdirect.h"	//max 9
+#if MAX_VERSION_MAJOR < 9	//Max 9
+	#include "max_mem.h"	//max 8 and earlier
 #else
-#include "max_mem.h"		//max 8 and earlier
+	#include "maxheapdirect.h"
 #endif
 
 #include "resource.h"

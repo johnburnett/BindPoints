@@ -31,9 +31,19 @@ public:
 
 	int						NumRefs();
 	RefTargetHandle			GetReference(int i);
+#if MAX_VERSION_MAJOR < 14 //Max 2012
 	void					SetReference(int i, RefTargetHandle rtarg);
+#else
+private:
+	virtual void			SetReference(int i, RefTargetHandle rtarg);
+public:
+#endif
 	int						RemapRefOnLoad(int iref);
+#if MAX_VERSION_MAJOR < 17 //Max 2015
 	RefResult				NotifyRefChanged(Interval changeInt, RefTargetHandle hTarget, PartID& partID, RefMessage message);
+#else
+	RefResult				NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget, PartID& partID, RefMessage message, BOOL propagate);
+#endif
 
 	// ReferenceTarget ////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +52,11 @@ public:
 	// BaseObject /////////////////////////////////////////////////////////////////////////////////
 
 	CreateMouseCallBack*	GetCreateMouseCallBack();
+#if MAX_VERSION_MAJOR < 15 //Max 2013
 	TCHAR*					GetObjectName();
+#else
+	const TCHAR*			GetObjectName();
+#endif
 
 	// Modifier ///////////////////////////////////////////////////////////////////////////////////
 

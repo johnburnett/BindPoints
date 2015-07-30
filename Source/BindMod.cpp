@@ -44,12 +44,20 @@ void ToPoint::UpdateUI()
 		for (i=0; i<pCount; i++)
 			bCount += pointInfo[i]->binds.Count();
 
+#if MAX_VERSION_MAJOR < 15	//Max 2013
 		str.printf("%d", pCount);
+#else
+		str.printf(_T("%d"), pCount);
+#endif
 		hTextWnd = GetDlgItem(hWnd,IDC_NUMPOINTS);
 		SetWindowText(hTextWnd, str);
 		str.Resize(0);
 
+#if MAX_VERSION_MAJOR < 15	//Max 2013
 		str.printf("%d", bCount);
+#else
+		str.printf(_T("%d"), bCount);
+#endif
 		hTextWnd = GetDlgItem(hWnd,IDC_NUMBINDS);
 		SetWindowText(hTextWnd, str);
 

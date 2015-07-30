@@ -30,7 +30,11 @@ class ToShape : public Modifier
 		Class_ID ClassID() { return TOSHAPE_CLASSID; }
 		SClass_ID SuperClassID() { return OSM_CLASS_ID; }
 		void GetClassName(TSTR& s) { s = GetString(IDS_TOSHAPE_CLASSNAME); }
+#if MAX_VERSION_MAJOR < 15 //Max 2013
 		TCHAR *GetObjectName() { return GetString(IDS_TOSHAPE_CLASSNAME); }
+#else
+		const TCHAR *GetObjectName() { return GetString(IDS_TOSHAPE_CLASSNAME); }
+#endif
 		CreateMouseCallBack* GetCreateMouseCallBack() { return NULL; }
 		void DeleteThis() { delete this; }
 		void BeginEditParams(IObjParam *ip, ULONG flags,Animatable *prev);
@@ -39,8 +43,18 @@ class ToShape : public Modifier
 		RefTargetHandle Clone( RemapDir &remap );
 		int NumRefs();
 		RefTargetHandle GetReference(int i);
+#if MAX_VERSION_MAJOR < 14 //Max 2012
 		void SetReference(int i, RefTargetHandle rtarg);
+#else
+private:
+		virtual void SetReference(int i, RefTargetHandle rtarg);
+public:
+#endif
+#if MAX_VERSION_MAJOR < 17 //Max 2015
 		RefResult NotifyRefChanged(	Interval changeInt, RefTargetHandle hTarget, PartID& partID,  RefMessage message);
+#else
+		RefResult NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget, PartID& partID,  RefMessage message, BOOL propagate);
+#endif
 
 		int	NumParamBlocks() { return 1; }
 		IParamBlock2* GetParamBlock(int i) { return ((i == 0) ? pblock : NULL); }

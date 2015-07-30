@@ -1,10 +1,20 @@
-#include "maxscrpt\Maxscrpt.h"
-#include "maxscrpt\Strings.h"
-#include "maxscrpt\arrays.h"
-#include "maxscrpt\3DMath.h"
-#include "maxscrpt\Numbers.h"
-#include "maxscrpt\MAXclses.h"
-#include "maxscrpt\definsfn.h"
+#if MAX_VERSION_MAJOR < 14	//Max2012
+	#include "maxscrpt\Maxscrpt.h"
+	#include "maxscrpt\Strings.h"
+	#include "maxscrpt\arrays.h"
+	#include "maxscrpt\3DMath.h"
+	#include "maxscrpt\Numbers.h"
+	#include "maxscrpt\MAXclses.h"
+	#include "maxscrpt\definsfn.h"
+#else
+	#include "maxscript\maxscript.h"
+	#include "maxscript\foundation\strings.h"
+	#include "maxscript\foundation\arrays.h"
+	#include "maxscript\foundation\3dmath.h"
+	#include "maxscript\foundation\numbers.h"
+	#include "maxscript\maxwrapper\maxclasses.h"
+	#include "maxscript\macros\define_instantiation_functions.h"
+#endif
 
 #include "ToNode.h"
 #include "ToShape.h"
@@ -20,6 +30,7 @@
 		id != TOPOINT_CLASSID )					\
 		throw RuntimeError(GetString(IDS_NOTBINDERROR), arg_list[0]);
 
+#if MAX_VERSION_MAJOR < 17 //Max 2015
 #define get_valid_node(_checknode, _node, _fn)								\
 	nv = _checknode;														\
 	if (is_node(nv))														\
@@ -32,7 +43,21 @@
 		throw RuntimeError (#_fn##" requires a node");						\
 	}																		\
 	_node = nv->to_node()
-
+#else
+#define get_valid_node(_checknode, _node, _fn)								\
+	nv = _checknode;														\
+	if (is_node(nv))														\
+	{																		\
+		if(nv->ref_deleted)													\
+			throw RuntimeError(_T("Attempted to access to deleted object"));\
+	}																		\
+	else																	\
+	{																		\
+		throw RuntimeError (_T(#_fn##_T(" requires a node")));				\
+	}																		\
+	_node = nv->to_node()
+#endif
+	
 def_struct_primitive( bindOps_update,			bindOps,	"Update");
 def_struct_primitive( bindOps_addNode,			bindOps,	"AddNode");
 def_struct_primitive( bindOps_removeNode,		bindOps,	"RemoveNode");
@@ -259,7 +284,7 @@ Value* bindOps_setNumPoints_cf(Value** arg_list, int count)
 	return &ok;
 }
 
-#if (MAX_RELEASE < 9000)
+#if MAX_MAJOR_VERSION < 9	//Max 9
 #define check_arg_count(fn, w, g)	if ((w) != (g)) throw ArgCountError (_T(#fn), w, g)
 #endif
 

@@ -32,6 +32,10 @@ ClassDesc2* GetToShapeDesc() { return &ToShapeDesc; }
 IObjParam* ToShape::ip = NULL;
 HWND ToShape::hWnd = NULL;
 
+#if MAX_VERSION_MAJOR < 15	//Max 2013
+ #define p_end end
+#endif
+
 static ParamBlockDesc2 bind_param_blk ( bind_params, _T("Parameters"),  0, &ToShapeDesc,
 	P_AUTO_CONSTRUCT + P_AUTO_UI, PBLOCK_REF,
 	//rollout
@@ -41,8 +45,8 @@ static ParamBlockDesc2 bind_param_blk ( bind_params, _T("Parameters"),  0, &ToSh
 		p_default, 	1.0f,
 		p_range, 	-9999999.0f,	9999999.0f,
 		p_ui, 		TYPE_SPINNER,	EDITTYPE_FLOAT, IDC_STRENGTH_EDIT,	IDC_STRENGTH_SPIN, 0.01f,
-		end,
-	end
+		p_end,
+	p_end
 );
 
 class ToShapeParamMapDlgProc : public ParamMap2UserDlgProc {
@@ -51,18 +55,18 @@ class ToShapeParamMapDlgProc : public ParamMap2UserDlgProc {
 
 		ToShapeParamMapDlgProc(ToShape *mod) { ts = mod; }
 		void Update(TimeValue t) { if (ts) ts->UpdateUI(); }
-#if (MAX_RELEASE >= 9000)
-		INT_PTR DlgProc(TimeValue t,IParamMap2 *map,HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
-#else
+#if MAX_VERSION_MAJOR < 9 //Max 9
 		BOOL DlgProc(TimeValue t,IParamMap2 *map,HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+#else
+		INT_PTR DlgProc(TimeValue t,IParamMap2 *map,HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 #endif
 		void DeleteThis() { delete this; }
 };
 
-#if (MAX_RELEASE >= 9000)
-INT_PTR ToShapeParamMapDlgProc::DlgProc(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-#else
+#if MAX_VERSION_MAJOR < 9 //Max 9
 BOOL ToShapeParamMapDlgProc::DlgProc(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+#else
+INT_PTR ToShapeParamMapDlgProc::DlgProc(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 #endif
 {
 	switch (msg)
@@ -144,17 +148,29 @@ void ToShape::UpdateUI()
 		for (i=0; i<pCount; i++)
 			bCount += pointInfo[i]->binds.Count();
 
+#if MAX_VERSION_MAJOR < 15 //Max 2013
 		str.printf("%d", nCount);
+#else
+		str.printf(_T("%d"), nCount);
+#endif
 		hTextWnd = GetDlgItem(hWnd,IDC_NUMNODES);
 		SetWindowText(hTextWnd, str);
 		str.Resize(0);
 
+#if MAX_VERSION_MAJOR < 15 //Max 2013
 		str.printf("%d", pCount);
+#else
+		str.printf(_T("%d"), pCount);
+#endif
 		hTextWnd = GetDlgItem(hWnd,IDC_NUMPOINTS);
 		SetWindowText(hTextWnd, str);
 		str.Resize(0);
 
+#if MAX_VERSION_MAJOR < 15 //Max 2013
 		str.printf("%d", bCount);
+#else
+		str.printf(_T("%d"), bCount);
+#endif
 		hTextWnd = GetDlgItem(hWnd,IDC_NUMBINDS);
 		SetWindowText(hTextWnd, str);
 
@@ -188,9 +204,15 @@ void ToShape::SetReference(int i, RefTargetHandle rtarg)
 		nodes[i-NUM_REFS] = (INode*)rtarg;
 }
 
+#if MAX_VERSION_MAJOR < 17 //Max 2015
 RefResult ToShape::NotifyRefChanged(
 	Interval changeInt, RefTargetHandle hTarget,
 	PartID& partID,  RefMessage message)
+#else
+RefResult ToShape::NotifyRefChanged(
+	const Interval& changeInt, RefTargetHandle hTarget,
+	PartID& partID,  RefMessage message, BOOL propagate)
+#endif
 {
 	switch (message)
 	{
@@ -521,10 +543,14 @@ BOOL ToShape::AddNode(INode* thisNode, INode* node)
 
 	nodes.Append(1, &node);
 
-#if (MAX_RELEASE >= 9000)	//max 9
-	SetReference((NUM_REFS + nodes.Count()-1), node);
-#else	//max 8 and earlier
+#if MAX_VERSION_MAJOR < 9 //Max 9
 	MakeRefByID(FOREVER, (NUM_REFS + nodes.Count()-1), node);
+#else
+	#if MAX_VERSION_MAJOR < 14 //Max 2012
+	SetReference((NUM_REFS + nodes.Count()-1), node);
+	#else
+	ReplaceReference((NUM_REFS + nodes.Count()-1), node);
+	#endif
 #endif
 
 	UpdateUI();
